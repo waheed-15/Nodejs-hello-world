@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 19
+
+  pre_build:
+    commands:
+      # Authenticate Docker to ECR
+    -  $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+
+  build:
+    commands:
+      # Build Docker image
+    -  docker build -t $IMAGE_REPO_NAME .
+
+  post_build:
+    commands:
+      # Tag Docker image
+    -  docker tag $IMAGE_REPO_NAME:latest $ECR_REPO_URI/$IMAGE_REPO_NAME:latest
+
+      # Push Docker image to ECR
+    -  docker push $ECR_REPO_URI/$IMAGE_REPO_NAME:latest
